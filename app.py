@@ -75,7 +75,8 @@ def config():
         })
         save_models(models)
         return redirect(url_for('index'))
-    return render_template('config.html')
+    return render_template('config.html', 
+                        default_options=app.config['DEFAULT_OPTIONS'])
 
 @app.route('/edit/<int:model_id>', methods=['GET', 'POST'])
 def edit_model(model_id):
@@ -88,7 +89,10 @@ def edit_model(model_id):
         }
         save_models(models)
         return redirect(url_for('index'))
-    return render_template('config.html', model=models[model_id], model_id=model_id)
+    return render_template('config.html', 
+                        model=models[model_id], 
+                        model_id=model_id,
+                        default_options=app.config['DEFAULT_OPTIONS'])
 
 if __name__ == '__main__':
     app.run(debug=True)
