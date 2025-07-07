@@ -2,7 +2,7 @@
 
 ![Screenshot](screenshot.png) *[Add screenshot later]*
 
-A simple Flask-based web interface to manage multiple llama.cpp server configurations on Windows.
+A simple Flask-based web interface to manage multiple models for llama-server.exe on Windows.  This is useful if you run multiple models and need to switch frequently.  Each model can get it's own custom configuration.
 
 ## Features
 
@@ -10,7 +10,6 @@ A simple Flask-based web interface to manage multiple llama.cpp server configura
 - 💾 Save multiple model configurations
 - ✏️ Edit existing configurations
 - 👀 View currently running model status
-- ⚙️ Custom parameter management
 
 ## Requirements
 
@@ -23,7 +22,7 @@ A simple Flask-based web interface to manage multiple llama.cpp server configura
 
 1. **Clone this repository**
 ```bash
-git clone https://github.com/yourusername/llama-herder.git
+git clone https://github.com/patw/llama-herder.git
 cd llama-herder
 ```
 
@@ -87,9 +86,3 @@ python app.py
 
 MIT License - See [LICENSE](LICENSE) file for details.
 
-## Screenshot Instructions
-
-To add a screenshot later:
-1. Take a screenshot of your running interface
-2. Save as `screenshot.png` in project root
-3. Uncomment the screenshot line at top of README
