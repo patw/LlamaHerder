@@ -14,10 +14,15 @@
                value="{{ model.file if model_id is defined else '' }}" required>
     </div>
     <div class="mb-3">
-        <label for="params" class="form-label">Command Line Parameters</label>
+        <label for="default_params" class="form-label">Default Parameters</label>
+        <input type="text" class="form-control" id="default_params" 
+               value="{{ app.config['DEFAULT_OPTIONS'] }}" disabled>
+    </div>
+    <div class="mb-3">
+        <label for="params" class="form-label">Additional Parameters</label>
         <input type="text" class="form-control" id="params" name="params" 
                value="{{ model.params if model_id is defined else '' }}"
-               placeholder="e.g. --ctx-size 2048 --threads 8">
+               placeholder="e.g. --temp 0.7 --top-k 40 --top-p 0.9">
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>

@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
+from dotenv import load_dotenv
 import subprocess
 import os
 import json
 from pathlib import Path
 
+load_dotenv()
 app = Flask(__name__)
 app.config['CONFIG_FILE'] = 'models.json'
-app.config['LLAMA_SERVER'] = 'C:\\Users\\beholder\\Desktop\\llama.cpp\\llama-server.exe'
+app.config['LLAMA_SERVER'] = os.getenv('LLAMA_SERVER')
+app.config['DEFAULT_OPTIONS'] = os.getenv('DEFAULT_OPTIONS', '')
 
 # Ensure config file exists
 if not Path(app.config['CONFIG_FILE']).exists():
@@ -44,7 +47,9 @@ def start_model(model_id):
         current_process.terminate()
     
     # Start new process
-    cmd = [app.config['LLAMA_SERVER'], '-m', model['file']] + model['params'].split()
+    cmd = [app.config['LLAMA_SERVER'], '-m', model['file']] 
+    cmd += app.config['DEFAULT_OPTIONS'].split()
+    cmd += model['params'].split()
     current_process = subprocess.Popen(cmd)
     current_model_id = model_id
     
