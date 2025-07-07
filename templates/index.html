@@ -11,6 +11,8 @@
                 <div>
                     <a href="{{ url_for('start_model', model_id=loop.index0) }}" 
                        class="btn btn-sm btn-primary">Start</a>
+                    <a href="{{ url_for('edit_model', model_id=loop.index0) }}" 
+                       class="btn btn-sm btn-secondary ms-1">Edit</a>
                 </div>
             </div>
             {% endfor %}

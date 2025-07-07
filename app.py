@@ -72,5 +72,18 @@ def config():
         return redirect(url_for('index'))
     return render_template('config.html')
 
+@app.route('/edit/<int:model_id>', methods=['GET', 'POST'])
+def edit_model(model_id):
+    models = get_models()
+    if request.method == 'POST':
+        models[model_id] = {
+            'name': request.form['name'],
+            'file': request.form['file'],
+            'params': request.form['params']
+        }
+        save_models(models)
+        return redirect(url_for('index'))
+    return render_template('config.html', model=models[model_id], model_id=model_id)
+
 if __name__ == '__main__':
     app.run(debug=True)
