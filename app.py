@@ -13,8 +13,9 @@ if not Path(app.config['CONFIG_FILE']).exists():
     with open(app.config['CONFIG_FILE'], 'w') as f:
         json.dump([], f)
 
-# Global to track current process
+# Globals to track current process
 current_process = None
+current_model_id = None
 
 def get_models():
     with open(app.config['CONFIG_FILE']) as f:
@@ -27,11 +28,14 @@ def save_models(models):
 @app.route('/')
 def index():
     models = get_models()
-    return render_template('index.html', models=models, current_process=current_process)
+    return render_template('index.html', 
+                         models=models, 
+                         current_process=current_process,
+                         current_model_id=current_model_id)
 
 @app.route('/start/<int:model_id>')
 def start_model(model_id):
-    global current_process
+    global current_process, current_model_id
     models = get_models()
     model = models[model_id]
     
@@ -42,15 +46,17 @@ def start_model(model_id):
     # Start new process
     cmd = [app.config['LLAMA_SERVER'], '-m', model['file']] + model['params'].split()
     current_process = subprocess.Popen(cmd)
+    current_model_id = model_id
     
     return redirect(url_for('index'))
 
 @app.route('/stop')
 def stop_model():
-    global current_process
+    global current_process, current_model_id
     if current_process:
         current_process.terminate()
         current_process = None
+        current_model_id = None
     return redirect(url_for('index'))
 
 @app.route('/config', methods=['GET', 'POST'])
