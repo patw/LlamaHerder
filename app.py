@@ -6,7 +6,7 @@ from pathlib import Path
 
 app = Flask(__name__)
 app.config['CONFIG_FILE'] = 'models.json'
-app.config['LLAMA_SERVER'] = 'llama-server.exe'
+app.config['LLAMA_SERVER'] = 'C:\\Users\\beholder\\Desktop\\llama.cpp\\llama-server.exe'
 
 # Ensure config file exists
 if not Path(app.config['CONFIG_FILE']).exists():
