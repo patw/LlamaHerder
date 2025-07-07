@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Add New Model</h2>
-<form method="POST">
+<h2>{% if model_id is defined %}Edit{% else %}Add New{% endif %} Model</h2>
+<form method="POST" action="{% if model_id is defined %}{{ url_for('edit_model', model_id=model_id) }}{% else %}{{ url_for('config') }}{% endif %}">
     <div class="mb-3">
         <label for="name" class="form-label">Model Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+        <input type="text" class="form-control" id="name" name="name" 
+               value="{{ model.name if model_id is defined else '' }}" required>
     </div>
     <div class="mb-3">
         <label for="file" class="form-label">GGUF File Path</label>
-        <input type="text" class="form-control" id="file" name="file" required>
+        <input type="text" class="form-control" id="file" name="file" 
+               value="{{ model.file if model_id is defined else '' }}" required>
     </div>
     <div class="mb-3">
         <label for="params" class="form-label">Command Line Parameters</label>
         <input type="text" class="form-control" id="params" name="params" 
+               value="{{ model.params if model_id is defined else '' }}"
                placeholder="e.g. --ctx-size 2048 --threads 8">
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
