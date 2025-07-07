@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Configured Models</h2>
+        <div class="list-group">
+            {% for model in models %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                {{ model.name }}
+                <div>
+                    <a href="{{ url_for('start_model', model_id=loop.index0) }}" 
+                       class="btn btn-sm btn-primary">Start</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Current Model</h5>
+                {% if current_process %}
+                <p class="card-text">Running: {{ models[current_model].name }}</p>
+                <a href="{{ url_for('stop_model') }}" class="btn btn-danger">Stop</a>
+                {% else %}
+                <p class="card-text">No model running</p>
+                {% endif %}
+                <a href="{{ url_for('config') }}" class="btn btn-secondary mt-2">Add Model</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
