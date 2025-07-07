@@ -1,8 +1,8 @@
 # 🦙 Llama Herder - Windows GUI for llama.cpp server
 
-![Screenshot](screenshot.png) *[Add screenshot later]*
-
 A simple Flask-based web interface to manage multiple models for llama-server.exe on Windows.  This is useful if you run multiple models and need to switch frequently.  Each model can get it's own custom configuration.
+
+![Screenshot](screenshot.png)
 
 ## Features
 
