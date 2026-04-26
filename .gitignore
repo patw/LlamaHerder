@@ -70,5 +70,8 @@ venv.bak/
 Thumbs.db
 
 # Project specific
-models.json
+models.bson
+models.bson.meta
+defaults.bson
+defaults.bson.meta
 .env

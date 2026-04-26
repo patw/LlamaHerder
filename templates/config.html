@@ -1,27 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{% if model_id is defined %}Edit{% else %}Add New{% endif %} Model</h2>
+<h2>{% if model_id is defined %}Edit{% else %}Add Model{% endif %}</h2>
 <form method="POST" action="{% if model_id is defined %}{{ url_for('edit_model', model_id=model_id) }}{% else %}{{ url_for('config') }}{% endif %}">
     <div class="mb-3">
         <label for="name" class="form-label">Model Name</label>
         <input type="text" class="form-control" id="name" name="name" 
-               value="{{ model.name if model_id is defined else '' }}" required>
+               value="{{ model.name if model_id is defined else (copy_from['name'] if copy_from else '') }}" required>
     </div>
     <div class="mb-3">
         <label for="file" class="form-label">GGUF File Path</label>
         <input type="text" class="form-control" id="file" name="file" 
-               value="{{ model.file if model_id is defined else '' }}" required>
+               value="{{ model.file if model_id is defined else (copy_from['file'] if copy_from else '') }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="mmproj" class="form-label">MMProj File Path (optional)</label>
+        <input type="text" class="form-control" id="mmproj" name="mmproj" 
+               value="{{ model.mmproj if model_id is defined else (copy_from['mmproj'] if copy_from else '') }}"
+               placeholder="e.g. /path/to/model-clip-vision-model.gguf">
     </div>
     <div class="mb-3">
         <label for="default_params" class="form-label">Default Parameters</label>
         <input type="text" class="form-control" id="default_params" 
-               value="{{ default_options }}" disabled>
+               value="{{ defaults['default_options'] }}" disabled>
+        <a href="{{ url_for('edit_defaults') }}" class="btn btn-sm btn-link mt-1">Edit defaults</a>
     </div>
     <div class="mb-3">
         <label for="params" class="form-label">Additional Parameters</label>
         <input type="text" class="form-control" id="params" name="params" 
-               value="{{ model.params if model_id is defined else '' }}"
+               value="{{ model.params if model_id is defined else (copy_from['params'] if copy_from else '') }}"
                placeholder="e.g. --temp 0.7 --top-k 40 --top-p 0.9">
     </div>
     <button type="submit" class="btn btn-primary">Save</button>

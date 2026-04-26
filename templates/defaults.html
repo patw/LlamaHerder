@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Default Settings</h2>
+<form method="POST" action="{{ url_for('edit_defaults') }}">
+    <div class="mb-3">
+        <label for="llama_server" class="form-label">llama-server Path</label>
+        <input type="text" class="form-control" id="llama_server" name="llama_server" 
+               value="{{ defaults['llama_server'] }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="default_options" class="form-label">Default Options</label>
+        <input type="text" class="form-control" id="default_options" name="default_options" 
+               value="{{ defaults['default_options'] }}"
+               placeholder="e.g. --host 0.0.0.0 --port 8086 -t 6 -ngl 99">
+    </div>
+    <div class="mb-3">
+        <label for="default_model_path" class="form-label">Default Model Path</label>
+        <input type="text" class="form-control" id="default_model_path" name="default_model_path" 
+               value="{{ defaults.get('default_model_path', '') }}"
+               placeholder="e.g. /home/user/models">
+        <div class="form-text">Relative model and mmproj paths will be resolved against this directory.</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

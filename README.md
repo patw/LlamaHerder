@@ -1,88 +1,110 @@
-# 🦙 Llama Herder - Windows GUI for llama.cpp server
+# 🦙 Llama Herder
 
-A simple Flask-based web interface to manage multiple models for llama-server.exe on Windows.  This is useful if you run multiple models and need to switch frequently.  Each model can get it's own custom configuration.
+A Flask-based web interface to manage and launch [llama.cpp](https://github.com/ggml-org/llama.cpp) server instances for multiple GGUF models. Switch between models with one click, each with its own custom configuration.
 
 ![Screenshot](screenshot.png)
 
 ## Features
 
-- 🚀 Start/stop llama-server.exe instances with one click
-- 💾 Save multiple model configurations
-- ✏️ Edit existing configurations
-- 👀 View currently running model status
+- 🚀 Start/stop llama-server instances with one click
+- 💾 Save and manage multiple model configurations
+- ✏️ Edit, copy, and delete configurations
+- 👁️ View currently running model status
+- 🔍 Vision models supported via mmproj files
 
 ## Requirements
 
-- Windows 10/11 (64-bit)
-- Python 3.8+
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) compiled for Windows (llama-server.exe)
-- GGUF model files
+- **llama.cpp** — A compiled [llama.cpp](https://github.com/ggml-org/llama.cpp) with `llama-server` built. This is the only hard dependency — Llama Herder is just a UI wrapper around it.
+- **Python 3.8+**
+- **GGUF model files** — Download from [Hugging Face](https://huggingface.co/models?search=gguf) (filter by format "gguf"). Look for repos from organizations like `bartowski`, `TheBloke`, `Qwen`, `HuggingFaceTB`, etc.
 
 ## Installation
 
-1. **Clone this repository**
+### 1. Install llama.cpp
+
+Follow the [llama.cpp build instructions](https://github.com/ggml-org/llama.cpp#build) for your platform. You need the `llama-server` binary:
+
+```bash
+git clone https://github.com/ggml-org/llama.cpp.git
+cd llama.cpp
+cmake -B build
+cmake --build build --config Release --parallel
+```
+
+The `llama-server` binary will be in `build/bin/` (Linux/macOS) or `build\bin\Release\llama-server.exe` (Windows).
+
+### 2. Install Llama Herder
+
+Clone the repo and install dependencies:
+
 ```bash
 git clone https://github.com/patw/llama-herder.git
 cd llama-herder
 ```
 
-2. **Install dependencies**
+**Using pip:**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Configure your environment**
-   - Edit `.env` file with your paths:
-```ini
-LLAMA_SERVER=C:\path\to\llama-server.exe
-DEFAULT_OPTIONS=-t 6 -ngl 99 --host 0.0.0.0 --port 8086
+**Using uv:**
+```bash
+uv pip install -r requirements.txt
 ```
 
-4. **Add your GGUF models**
-   - Place your model files in a known location
-   - Add them through the web interface
+### 3. Download a model
+
+Grab a GGUF model from Hugging Face. For example:
+
+```bash
+# Qwen 2.5 7B
+huggingface-cli download Qwen/Qwen2.5-7B-Instruct-GGUF qwen2.5-7b-instruct-q4_k_m.gguf \
+  --local-dir models/
+
+# Or Gemma 2 2B
+huggingface-cli download google/gemma-2-2b-it-gguf gemma-2-2b-it-q4_k_m.gguf \
+  --local-dir models/
+```
 
 ## Usage
 
-1. **Start the application**
+### Start the app
+
 ```bash
 python app.py
 ```
 
-2. **Access the web interface**
-   - Open `http://localhost:5000` in your browser
+Then open `http://localhost:5000` in your browser.
 
-3. **Manage your models**
-   - Click "Add Model" to create new configurations
-   - Use Start/Stop buttons to control the server
-   - Edit existing configurations as needed
+### First-time setup
 
-## Configuration Options
+1. Click **Add Model** and give it a name, the path to your GGUF file, and any parameters.
+2. Click **Edit defaults** to set the path to your `llama-server` binary and any default command-line options (threads, GPU layers, host, port, etc.).
+3. Click **Start** on a model to launch it. The status card shows which model is running — click **Stop** to terminate.
 
-Key parameters you can set:
-- `-t`: Threads
-- `-ngl`: GPU layers
-- `--ctx-size`: Context size
-- `--temp`: Temperature
-- `--top-k`, `--top-p`: Sampling parameters
+### Model fields
 
-## Troubleshooting
+| Field | Description |
+|---|---|
+| **Model Name** | Display name shown in the UI |
+| **GGUF File Path** | Absolute or relative path to the `.gguf` model file |
+| **MMProj File Path** | Optional vision projectors (clip vision models). Leave blank for text-only models |
+| **Additional Parameters** | Extra `llama-server` flags for this model (temperature, context size, top-k, etc.) |
 
-**Common issues:**
-- Make sure llama-server.exe path is correct in `.env`
-- Ensure your GGUF model paths are accessible
-- Check firewall settings if having connection issues
-- Verify you have enough VRAM for the model
+### Defaults
 
-## Development
+Set these once in **Edit defaults**:
 
-To run in development mode:
-```bash
-set FLASK_DEBUG=1
-python app.py
-```
+| Field | Description |
+|---|---|
+| **llama-server path** | Full path to your `llama-server` binary |
+| **Default options** | Shared flags like `--host 0.0.0.0 --port 8086 -t 8 --ngl 99` |
+| **Default model path** | Base directory for resolving relative model paths |
+
+## Data storage
+
+Configurations are stored in MooFile databases (`models.bson` / `defaults.bson`) — a lightweight, embedded, single-file document store. No server or external database required.
 
 ## License
 
 MIT License - See [LICENSE](LICENSE) file for details.
-
