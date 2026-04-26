@@ -30,14 +30,9 @@ log_event = threading.Event()
 def read_process_output(process):
     try:
         for line in process.stdout:
-            decoded = line.decode('utf-8', errors='replace').rstrip('\n')
+            line = line.rstrip('\n')
             with log_lock:
-                log_buffer.append(decoded)
-            log_event.set()
-        for line in process.stderr:
-            decoded = line.decode('utf-8', errors='replace').rstrip('\n')
-            with log_lock:
-                log_buffer.append(decoded)
+                log_buffer.append(line)
             log_event.set()
     except Exception:
         pass
