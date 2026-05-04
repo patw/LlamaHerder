@@ -44,96 +44,11 @@
                 <p class="card-text">No model running</p>
                 {% endif %}
                 <a href="{{ url_for('config') }}" class="btn btn-secondary mb-2">Add Model</a>
+                <a href="{{ url_for('view_logs') }}" class="btn btn-outline-secondary mb-2">
+                    <i class="bi bi-terminal"></i> View Logs
+                </a>
             </div>
         </div>
     </div>
 </div>
-
-<div class="row mt-3">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-terminal"></i> Console Log</span>
-                <div>
-                    <button class="btn btn-sm btn-outline-secondary me-1" id="clearLogs">
-                        <i class="bi bi-trash"></i> Clear
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary" id="toggleLogs">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="logsPanel" class="p-0" style="max-height: 500px; overflow: hidden;">
-                <div id="logContainer" class="p-2" style="max-height: 420px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; background: #1e1e1e; color: #d4d4d4; white-space: pre-wrap; word-break: break-all;">
-                    <div class="text-muted">No logs yet. Start a model to see output.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-(function() {
-    const logContainer = document.getElementById('logContainer');
-    const logsPanel = document.getElementById('logsPanel');
-    const toggleBtn = document.getElementById('toggleLogs');
-    const clearBtn = document.getElementById('clearLogs');
-    let isCollapsed = false;
-    let shouldScroll = true;
-    let lastLogCount = 0;
-
-    // Check if user is scrolled to bottom
-    function isAtBottom() {
-        return logContainer.scrollHeight - logContainer.scrollTop - logContainer.clientHeight < 30;
-    }
-
-    // Toggle collapse
-    toggleBtn.addEventListener('click', function() {
-        isCollapsed = !isCollapsed;
-        if (isCollapsed) {
-            logsPanel.style.maxHeight = '0';
-            logsPanel.style.overflow = 'hidden';
-            toggleBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
-        } else {
-            logsPanel.style.maxHeight = '500px';
-            logsPanel.style.overflow = 'hidden';
-            toggleBtn.innerHTML = '<i class="bi bi-chevron-down"></i>';
-        }
-    });
-
-    // Clear logs
-    clearBtn.addEventListener('click', function() {
-        logContainer.innerHTML = '';
-        lastLogCount = 0;
-    });
-
-    // Track scroll behavior
-    logContainer.addEventListener('scroll', function() {
-        shouldScroll = isAtBottom();
-    });
-
-    // Connect to SSE stream
-    function connect() {
-        const evtSource = new EventSource('/logs/stream');
-
-        evtSource.onmessage = function(event) {
-            const line = JSON.parse(event.data);
-            const div = document.createElement('div');
-            div.textContent = line;
-            logContainer.appendChild(div);
-            lastLogCount++;
-
-            if (shouldScroll) {
-                logContainer.scrollTop = logContainer.scrollHeight;
-            }
-        };
-
-        evtSource.onerror = function() {
-            setTimeout(connect, 3000);
-        };
-    }
-
-    connect();
-})();
-</script>
 {% endblock %}

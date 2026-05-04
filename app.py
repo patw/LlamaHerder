@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, Response
+from flask import Flask, render_template, request, redirect, url_for
 from moofile import Collection, DocumentNotFoundError
 import subprocess
 import os
@@ -20,31 +20,20 @@ if not defaults_db.exists({}):
         'default_model_path': ''
     })
 
+LOG_FILE = '/tmp/llamaherder.log'
+
 # Globals to track current process
 current_process = None
 current_model_id = None
-log_buffer = []
-log_lock = threading.Lock()
-log_event = threading.Event()
 
 def read_process_output(process):
     try:
-        for line in process.stdout:
-            line = line.rstrip('\n')
-            with log_lock:
-                log_buffer.append(line)
-            log_event.set()
+        with open(LOG_FILE, 'a') as f:
+            for line in process.stdout:
+                f.write(line)
+                f.flush()
     except Exception:
         pass
-
-def stream_logs():
-    while True:
-        log_event.clear()
-        with log_lock:
-            snapshot = list(log_buffer)
-        for entry in snapshot:
-            yield f"data: {json.dumps(entry)}\n\n"
-        log_event.wait(timeout=1.0)
 
 def get_models():
     return models_db.find({}).to_list()
@@ -101,7 +90,7 @@ def start_model(model_id):
         cmd += model['params'].split()
     current_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     current_model_id = model_id
-    log_buffer.clear()
+    open(LOG_FILE, 'w').close()
     thread = threading.Thread(target=read_process_output, args=(current_process,), daemon=True)
     thread.start()
     
@@ -198,10 +187,16 @@ def delete_model(model_id):
             current_model_id -= 1
     return redirect(url_for('index'))
 
-@app.route('/logs/stream')
-def logs_stream():
-    return Response(stream_logs(), mimetype='text/event-stream',
-                    headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'disabled'})
+@app.route('/logs')
+def view_logs():
+    lines = []
+    try:
+        with open(LOG_FILE, 'r') as f:
+            lines = f.readlines()
+        lines = [line.rstrip('\n') for line in lines[-200:]]
+    except FileNotFoundError:
+        pass
+    return render_template('logs.html', lines=lines, log_file=LOG_FILE)
 
 if __name__ == '__main__':
     app.run(debug=True)

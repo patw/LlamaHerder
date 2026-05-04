@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-terminal"></i> Log Output</h2>
+    <div>
+        <a href="{{ url_for('view_logs') }}" class="btn btn-sm btn-outline-secondary me-1">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<p class="text-muted small mb-2">Last 200 lines of <code>{{ log_file }}</code></p>
+
+<div class="p-2" style="background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; overflow-y: auto; max-height: 75vh; border-radius: 4px;">
+{% if lines %}
+{% for line in lines %}{{ line }}
+{% endfor %}
+{% else %}
+<span class="text-muted">No log output yet. Start a model to generate logs.</span>
+{% endif %}
+</div>
+{% endblock %}
